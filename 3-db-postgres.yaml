@@ -1,34 +1,8 @@
 ---
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: db-postgres
-  accessModes:
-  - ReadWriteMany
-  capacity:
-    storage: 5Gi
-  hostPath:
-    path: /data/db-postgres
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-path
-  volumeMode: Filesystem
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: db-postgres
-  accessModes:
-  - ReadWriteMany
-  resources:
-    requests:
-      storage: 5Gi
-  volumeName: db-postgres
----
-apiVersion: v1
 kind: Secret
 metadata:
   name: postgresql
-  namespace: database
 type: Opaque
 data:
   POSTGRES_HOST_AUTH_METHOD: dHJ1c3Q=
@@ -72,15 +46,6 @@ spec:
           name: db-postgres
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: topology.kubernetes.io/zone
-                operator: In
-                values:
-                - sydney
       volumes:
       - name: db-postgres
         persistentVolumeClaim:
